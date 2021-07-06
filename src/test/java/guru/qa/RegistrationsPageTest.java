@@ -2,16 +2,15 @@ package guru.qa;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.SelenideElement;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-import static com.codeborne.selenide.Condition.exist;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selectors.*;
-import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.Selenide.$;
+import static com.codeborne.selenide.Selenide.open;
 
 public class RegistrationsPageTest {
 
@@ -27,7 +26,7 @@ public class RegistrationsPageTest {
         enterFirstNameAndLastName("Violetta", "Trudnikova");
         enterEmail("test@gmail.com");
         selectGender("Female");
-        enterMobilePhone("89109101634");
+        enterMobilePhone("9109101634");
         selectDatOfBirth();
         selectSubject("English");
         selectHobbies("Reading");
@@ -43,7 +42,7 @@ public class RegistrationsPageTest {
     }
 
     void enterFirstNameAndLastName(String name, String lastName) {
-        $(byId("firstName")).setValue(name);
+        $("#firstName").setValue(name);
         $(byId("lastName")).setValue(lastName);
     }
 
@@ -61,7 +60,7 @@ public class RegistrationsPageTest {
 
     void selectDatOfBirth() {
         $(byId("dateOfBirthInput")).click();
-        $(byClassName("react-datepicker__month-select")).selectOption("February");
+        $(".react-datepicker__month-select").selectOption("February");
         $(byClassName("react-datepicker__year-select")).selectOption("1995");
         Selenide.$x("//*[@class= 'react-datepicker__week']/*[text()=1]").click();
     }
@@ -76,7 +75,7 @@ public class RegistrationsPageTest {
 
     void uploadPicture() {
         File file = new File("src/test/resources/test.png");
-        $("#uploadPicture").should(exist).uploadFile(file);
+        $("#uploadPicture").uploadFile(file);
     }
 
     void enterAddress(String address) {
@@ -95,8 +94,16 @@ public class RegistrationsPageTest {
     }
 
     void checkSuccessfulForm() {
-        SelenideElement message = $("#example-modal-sizes-title-lg");
-        Assertions.assertEquals("Thanks for submitting the form", message.getText());
+        $("#example-modal-sizes-title-lg").shouldHave(text("Thanks for submitting the form"));
+        Selenide.$x("//*[@class='modal-body']//*[text() ='Student Name']/following-sibling::td").shouldHave(text("Violetta Trudnikova"));
+        Selenide.$x("//*[@class='modal-body']//*[text() ='Student Email']/following-sibling::td").shouldHave(text("test@gmail.com"));
+        Selenide.$x("//*[@class='modal-body']//*[text() ='Gender']/following-sibling::td").shouldHave(text("Female"));
+        Selenide.$x("//*[@class='modal-body']//*[text() ='Mobile']/following-sibling::td").shouldHave(text("9109101634"));
+        Selenide.$x("//*[@class='modal-body']//*[text() ='Date of Birth']/following-sibling::td").shouldHave(text("01 February,1995"));
+        Selenide.$x("//*[@class='modal-body']//*[text() ='Hobbies']/following-sibling::td").shouldHave(text("Reading"));
+        Selenide.$x("//*[@class='modal-body']//*[text() ='Picture']/following-sibling::td").shouldHave(text("test.png"));
+        Selenide.$x("//*[@class='modal-body']//*[text() ='Address']/following-sibling::td").shouldHave(text("Leninsky Prospect 76"));
+        Selenide.$x("//*[@class='modal-body']//*[text() ='State and City']/following-sibling::td").shouldHave(text("NCR Gurgaon"));
 
     }
 }
